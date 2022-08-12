@@ -3,12 +3,49 @@
  */
 package proxyfetcher;
 
+import com.gargoylesoftware.htmlunit.*;
+import com.gargoylesoftware.htmlunit.html.*;
+import java.io.IOException;
+
 public class App {
     public String getGreeting() {
-        return "Hello World!";
+        WebClient client = new WebClient();
+
+        try {
+            client.getOptions().setCssEnabled(true);
+            client.getOptions().setJavaScriptEnabled(false);
+            String searchUrl = "https://advanced.name/freeproxy?page=1";
+
+
+            HtmlPage page = client.getPage(searchUrl);
+
+            page.getElementsByTagName("tr").forEach((tableRow) -> {
+                //Insert variables here, latest IP, latest ports. populate them from where the println's are
+                tableRow.getElementsByTagName("td").forEach((tableColumn) -> {
+
+                    if (!tableColumn.getAttributeDirect("data-ip").isEmpty()) {
+                        System.out.println(tableColumn.getAttributeDirect("data-ip"));
+                        
+                    }
+
+                    if (!tableColumn.getAttributeDirect("data-port").isEmpty()) {
+                        System.out.println(tableColumn.getAttributeDirect("data-port"));
+                    }
+                });
+            });
+
+            client.close();
+
+        } catch (IOException e) {
+            System.out.println("An error occurred: " + e);
+        }
+
+        return "Ran";
     }
 
     public static void main(String[] args) {
         System.out.println(new App().getGreeting());
+
+       
     }
 }
