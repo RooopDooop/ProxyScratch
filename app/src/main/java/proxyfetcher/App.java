@@ -8,10 +8,10 @@ import proxyfetcher.websiteClasses.advancedName;
 public class App {
 
     public static void main(String[] args) {
-        advancedName myObject = new advancedName();
+        advancedName objAdvance = new advancedName();
 
-        myObject.fetchProxies().forEach((strProxy) -> {
-            System.out.println(strProxy);
+        objAdvance.fetchProxies().forEach((objProxy) -> {
+            System.out.println(objProxy.serveAddress());
         });
     }
 }
