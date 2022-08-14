@@ -5,13 +5,21 @@ package proxyfetcher;
 
 import proxyfetcher.websiteClasses.advancedName;
 
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
 public class App {
 
     public static void main(String[] args) {
-        advancedName objAdvance = new advancedName();
+        SpringApplication.run(App.class, args);
 
-        objAdvance.fetchProxies().forEach((objProxy) -> {
+
+        
+        //System.out.println(objAdvance.fetchRandomProxy().serveAddress());
+
+        /*objAdvance.fetchProxies().forEach((objProxy) -> {
             System.out.println(objProxy.serveAddress());
-        });
+        });*/
     }
 }

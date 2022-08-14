@@ -6,70 +6,126 @@ import java.io.IOException;
 import java.util.*;  
 
 public class advancedName {
+
+    public advancedName() {
+        fetchProxies();
+
+        System.out.println("Constructor ran");
+    }
+
+    ArrayList<proxyInstance> arrProxies = new ArrayList<>();
+
     public class proxyInstance {
-        String IP;
-        String Port;
-        ArrayList<String> Descriptors = new ArrayList<>();
-        String Location;
-        int Speed;
-        long LastCheckup;
+        private String IP;
+        private String Port;
+        private ArrayList<String> Descriptors = new ArrayList<>();
+        private String Location;
+        private int Speed;
+        private long LastCheckup;
+
+        public void setIP(String inputIP) {
+            this.IP = inputIP;
+        }
+
+        public void setPort(String inputPort) {
+            this.Port = inputPort;
+        }
+
+        public void setDescriptors(DomNodeList<HtmlElement> objHTMLDesc, int index) {
+            String[] subDescriptor = objHTMLDesc.get(index).asNormalizedText().split(" ");
+
+            for (int w = 0; w < subDescriptor.length; w++) {
+                this.Descriptors.add(subDescriptor[w]);
+            }
+        }
+
+        public void setLocation(String inputLocation) {
+            if (inputLocation.isEmpty()) {
+                this.Location = "Unknown";
+            } else {
+                this.Location = inputLocation;
+            }
+        }
+
+        public void setSpeed(int inputSpeed) {
+            this.Speed = inputSpeed;
+        }
+
+        public void setLastCheckup() {
+            this.LastCheckup = System.currentTimeMillis();
+        }
 
         public String serveAddress() {
-            return this.IP + ":" + this.Port;
+            return this.IP + ":" + this.Port + " - " + this.Speed + " - " + this.LastCheckup + " - " + this.Descriptors + " - " + this.Location;
         }
     }
 
-    public ArrayList<proxyInstance> fetchProxies() {
+    public boolean isStringInt(String s)
+    {
+        try
+        {
+            Integer.parseInt(s);
+            return true;
+        } catch (NumberFormatException ex)
+        {
+            return false;
+        }
+    }
+
+    private void fetchProxies() {
         WebClient client = new WebClient();
-        ArrayList<proxyInstance> arrProxies = new ArrayList<>();
+        arrProxies = new ArrayList<proxyInstance>();
 
         try {
             client.getOptions().setCssEnabled(true);
             client.getOptions().setJavaScriptEnabled(false);
-            String searchUrl = "https://advanced.name/freeproxy?page=1";
 
-            HtmlPage page = client.getPage(searchUrl);
-            page.getElementsByTagName("tr").forEach((tableRow) -> {
-                //Insert variables here, latest IP, latest ports. populate them from where the println's are
+            String searchGlobalUrl = "https://advanced.name/freeproxy";
+            HtmlPage pageGlobal = client.getPage(searchGlobalUrl);
 
-                proxyInstance objProxy = new proxyInstance();
-                DomNodeList<HtmlElement> arrColumns = tableRow.getElementsByTagName("td");
+            pageGlobal.getElementsByTagName("ul").forEach((paginationElements) -> {
+                paginationElements.getElementsByTagName("a").forEach((aElement) -> {
+                    if (isStringInt(aElement.asNormalizedText())) {
+                        try {
+                            String searchUrl = "https://advanced.name/freeproxy?page=" + aElement.asNormalizedText();
+                            HtmlPage page = client.getPage(searchUrl);
 
-                for (int i = 0; i < arrColumns.getLength(); i++) {
-                    switch(i) {
-                        case 0:
-                            //Skip, this is the row count
-                            break;
-                        case 1:
-                            //Skip, this is the JS populated IP (From Base64)
-                            objProxy.IP = new String(Base64.getDecoder().decode(arrColumns.get(i).getAttributeDirect("data-ip")));
-                            break;
-                        case 2:
-                            //Skip, this is the JS populated port (From Base64)
-                            objProxy.Port = new String(Base64.getDecoder().decode(arrColumns.get(i).getAttributeDirect("data-port")));
-                            break;
-                        case 3:
-                            String[] subDescriptor = arrColumns.get(i).asNormalizedText().split(" ");
+                            page.getElementsByTagName("tr").forEach((tableRow) -> {
+                                proxyInstance objProxy = new proxyInstance();
+                                DomNodeList<HtmlElement> arrColumns = tableRow.getElementsByTagName("td");
 
-                            for (int w = 0; w < subDescriptor.length; w++) {
-                                objProxy.Descriptors.add(subDescriptor[w]);
-                            }
-                            break;
-                        case 4:
-                            objProxy.Location = arrColumns.get(i).asNormalizedText();
-                            break;
-                        case 5:
-                            objProxy.Speed = Integer.parseInt(arrColumns.get(i).asNormalizedText());
-                            break;
-                        case 6:
-                            objProxy.LastCheckup = System.currentTimeMillis();
-                            break;
-                        default:
-                            System.out.println(i);
-                            break;
+                                for (int i = 0; i < arrColumns.getLength(); i++) {
+                                    switch(i) {
+                                        case 1:
+                                            objProxy.setIP(arrColumns.get(i).getAttributeDirect("data-ip"));
+                                            break;
+                                        case 2:
+                                            objProxy.setPort(arrColumns.get(i).getAttributeDirect("data-port"));
+                                            break;
+                                        case 3:
+                                            objProxy.setDescriptors(arrColumns, i);
+                                            break;
+                                        case 4:
+                                            objProxy.setLocation(arrColumns.get(i).asNormalizedText());
+                                            break;
+                                        case 5:
+                                            objProxy.setSpeed(Integer.parseInt(arrColumns.get(i).asNormalizedText()));
+                                            break;
+                                        case 6:
+                                            objProxy.setLastCheckup();
+                                            break;
+                                    }
+                                }
+
+                                if (objProxy.IP != null && objProxy.Port != null) {
+                                    arrProxies.add(objProxy);
+                                }
+                            });
+                        } catch (IOException e) {
+                            System.out.println("An error occurred: " + e);
+                        }
                     }
-                }
-                arrProxies.add(objProxy);
+                });
             });
 
             client.close();
@@ -77,7 +133,15 @@ public class advancedName {
         } catch (IOException e) {
             System.out.println("An error occurred: " + e);
         }
+    }
 
-        return arrProxies;
+    public proxyInstance fetchRandomProxy() {
+        int min = 0;
+        int max = (this.arrProxies.size() - 1);
+        return this.arrProxies.get(new Random().nextInt(max-min) + min);
+    }
+
+    public int fetchProxyQuantity() {
+        return this.arrProxies.size();
     }
 }
