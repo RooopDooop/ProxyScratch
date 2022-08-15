@@ -13,13 +13,5 @@ public class App {
 
     public static void main(String[] args) {
         SpringApplication.run(App.class, args);
-
-
-        
-        //System.out.println(objAdvance.fetchRandomProxy().serveAddress());
-
-        /*objAdvance.fetchProxies().forEach((objProxy) -> {
-            System.out.println(objProxy.serveAddress());
-        });*/
     }
 }

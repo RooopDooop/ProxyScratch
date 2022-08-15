@@ -24,15 +24,15 @@ public class advancedName {
         private int Speed;
         private long LastCheckup;
 
-        public void setIP(String inputIP) {
+        private void setIP(String inputIP) {
             this.IP = inputIP;
         }
 
-        public void setPort(String inputPort) {
+        private void setPort(String inputPort) {
             this.Port = inputPort;
         }
 
-        public void setDescriptors(DomNodeList<HtmlElement> objHTMLDesc, int index) {
+        private void setDescriptors(DomNodeList<HtmlElement> objHTMLDesc, int index) {
             String[] subDescriptor = objHTMLDesc.get(index).asNormalizedText().split(" ");
 
             for (int w = 0; w < subDescriptor.length; w++) {
@@ -40,7 +40,7 @@ public class advancedName {
             }
         }
 
-        public void setLocation(String inputLocation) {
+        private void setLocation(String inputLocation) {
             if (inputLocation.isEmpty()) {
                 this.Location = "Unknown";
             } else {
@@ -48,11 +48,11 @@ public class advancedName {
             }
         }
 
-        public void setSpeed(int inputSpeed) {
+        private void setSpeed(int inputSpeed) {
             this.Speed = inputSpeed;
         }
 
-        public void setLastCheckup() {
+        private void setLastCheckup() {
             this.LastCheckup = System.currentTimeMillis();
         }
 
@@ -153,5 +153,25 @@ public class advancedName {
 
     public JSONObject fetchProxyQuantity() {
         return new JSONObject().put("ProxyCount", this.arrProxies.size());
+    }
+
+    public proxyInstance fetchHighSpeed() {
+        proxyInstance objRandom = this.fetchRandomProxy();
+
+        if (objRandom.Speed < 3000) {
+            return fetchHighSpeed();
+        } else {
+            return objRandom;
+        }
+    }
+
+    public proxyInstance fetchSpecificLocation(String strLocation) {
+        proxyInstance objRandom = this.fetchRandomProxy();
+
+        if (!objRandom.Location.equals(strLocation)) {
+            return fetchSpecificLocation(strLocation);
+        } else {
+            return objRandom;
+        }
     }
 }
