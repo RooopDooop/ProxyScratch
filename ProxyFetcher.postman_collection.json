@@ -1,0 +1,116 @@
+{
+	"info": {
+		"_postman_id": "e2660479-c47c-47b7-a8d6-d6ec5a4fb3a2",
+		"name": "ProxyFetcher",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GetRandomProxy",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/randomProxy",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"randomProxy"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetHighSpeedProxy",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/highSpeedProxy",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"highSpeedProxy"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetLocationProxy",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/specificLocation?filterLocation=CA",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"specificLocation"
+					],
+					"query": [
+						{
+							"key": "filterLocation",
+							"value": "CA"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetDescriptor",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/specificDescriptors?filterDescriptors=ANON",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"specificDescriptors"
+					],
+					"query": [
+						{
+							"key": "filterDescriptors",
+							"value": "ANON"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetAvailableProxyCount",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/availableProxyCount",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"availableProxyCount"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

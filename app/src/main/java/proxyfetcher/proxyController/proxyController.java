@@ -8,9 +8,17 @@ import org.springframework.http.MediaType;
 
 import proxyfetcher.websiteClasses.advancedName;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Timer;
+
 @RestController
 public class proxyController {
     advancedName objAdvance = new advancedName();
+
+    public proxyController() {
+        new Timer().scheduleAtFixedRate(objAdvance, 0, 60000);
+    }
 
     @RequestMapping(value = "/randomProxy", method = RequestMethod.GET,produces = MediaType.APPLICATION_JSON_VALUE)
 	public String randomProxy() {
@@ -34,5 +42,8 @@ public class proxyController {
         return objAdvance.fetchSpecificLocation(filterLocation).serveProxy().toString();
     }
 
-    //Add return proxy with specific descriptor(s)
+    @RequestMapping(value = "/specificDescriptors", method = RequestMethod.GET,produces = MediaType.APPLICATION_JSON_VALUE)
+    public String specificDescriptors(@RequestParam String filterDescriptors) {
+        return objAdvance.fetchDescriptors(new ArrayList<String>(Arrays.asList(filterDescriptors.split(", ")))).serveProxy().toString();
+    }
 }

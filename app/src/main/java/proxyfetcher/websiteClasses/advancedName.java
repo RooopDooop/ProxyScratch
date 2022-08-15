@@ -6,20 +6,11 @@ import java.io.IOException;
 import java.util.*;
 import org.json.JSONObject;
 
-public class advancedName {
-
-    public advancedName() {
-        fetchProxies();
-
-        System.out.println("Constructor ran");
-    }
-
-    ArrayList<proxyInstance> arrProxies = new ArrayList<>();
-
-    public class proxyInstance {
+public class advancedName extends TimerTask {
+    public static class proxyInstance {
         private String IP;
         private String Port;
-        private ArrayList<String> Descriptors = new ArrayList<>();
+        private final ArrayList<String> Descriptors = new ArrayList<>();
         private String Location;
         private int Speed;
         private long LastCheckup;
@@ -33,11 +24,7 @@ public class advancedName {
         }
 
         private void setDescriptors(DomNodeList<HtmlElement> objHTMLDesc, int index) {
-            String[] subDescriptor = objHTMLDesc.get(index).asNormalizedText().split(" ");
-
-            for (int w = 0; w < subDescriptor.length; w++) {
-                this.Descriptors.add(subDescriptor[w]);
-            }
+            this.Descriptors.addAll(Arrays.asList(objHTMLDesc.get(index).asNormalizedText().split(" ")));
         }
 
         private void setLocation(String inputLocation) {
@@ -70,6 +57,14 @@ public class advancedName {
         }
     }
 
+    ArrayList<proxyInstance> arrProxies = new ArrayList<>();
+
+    @Override
+    public void run() {
+        fetchProxies();
+        System.out.println("Proxies refreshed");
+    }
+
     public boolean isStringInt(String s)
     {
         try
@@ -87,7 +82,7 @@ public class advancedName {
         arrProxies = new ArrayList<proxyInstance>();
 
         try {
-            client.getOptions().setCssEnabled(true);
+            client.getOptions().setCssEnabled(false);
             client.getOptions().setJavaScriptEnabled(false);
 
             String searchGlobalUrl = "https://advanced.name/freeproxy";
@@ -105,25 +100,13 @@ public class advancedName {
                                 DomNodeList<HtmlElement> arrColumns = tableRow.getElementsByTagName("td");
 
                                 for (int i = 0; i < arrColumns.getLength(); i++) {
-                                    switch(i) {
-                                        case 1:
-                                            objProxy.setIP(new String(Base64.getDecoder().decode(arrColumns.get(i).getAttributeDirect("data-ip"))));
-                                            break;
-                                        case 2:
-                                            objProxy.setPort(new String(Base64.getDecoder().decode(arrColumns.get(i).getAttributeDirect("data-port"))));
-                                            break;
-                                        case 3:
-                                            objProxy.setDescriptors(arrColumns, i);
-                                            break;
-                                        case 4:
-                                            objProxy.setLocation(arrColumns.get(i).asNormalizedText());
-                                            break;
-                                        case 5:
-                                            objProxy.setSpeed(Integer.parseInt(arrColumns.get(i).asNormalizedText()));
-                                            break;
-                                        case 6:
-                                            objProxy.setLastCheckup();
-                                            break;
+                                    switch (i) {
+                                        case 1 -> objProxy.setIP(new String(Base64.getDecoder().decode(arrColumns.get(i).getAttributeDirect("data-ip"))));
+                                        case 2 -> objProxy.setPort(new String(Base64.getDecoder().decode(arrColumns.get(i).getAttributeDirect("data-port"))));
+                                        case 3 -> objProxy.setDescriptors(arrColumns, i);
+                                        case 4 -> objProxy.setLocation(arrColumns.get(i).asNormalizedText());
+                                        case 5 -> objProxy.setSpeed(Integer.parseInt(arrColumns.get(i).asNormalizedText()));
+                                        case 6 -> objProxy.setLastCheckup();
                                     }
                                 }
 
@@ -170,6 +153,16 @@ public class advancedName {
 
         if (!objRandom.Location.equals(strLocation)) {
             return fetchSpecificLocation(strLocation);
+        } else {
+            return objRandom;
+        }
+    }
+
+    public proxyInstance fetchDescriptors(ArrayList<String> arrDescriptors) {
+        proxyInstance objRandom = this.fetchRandomProxy();
+
+        if (!objRandom.Descriptors.containsAll(arrDescriptors)) {
+            return fetchDescriptors(arrDescriptors);
         } else {
             return objRandom;
         }
