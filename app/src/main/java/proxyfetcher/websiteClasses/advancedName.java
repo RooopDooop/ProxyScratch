@@ -3,7 +3,8 @@ package proxyfetcher.websiteClasses;
 import com.gargoylesoftware.htmlunit.*;
 import com.gargoylesoftware.htmlunit.html.*;
 import java.io.IOException;
-import java.util.*;  
+import java.util.*;
+import org.json.JSONObject;
 
 public class advancedName {
 
@@ -55,8 +56,17 @@ public class advancedName {
             this.LastCheckup = System.currentTimeMillis();
         }
 
-        public String serveAddress() {
-            return this.IP + ":" + this.Port + " - " + this.Speed + " - " + this.LastCheckup + " - " + this.Descriptors + " - " + this.Location;
+        public JSONObject serveProxy() {
+            JSONObject jsonProxy = new JSONObject();
+
+            jsonProxy.put("IP", this.IP);
+            jsonProxy.put("Port", this.Port);
+            jsonProxy.put("Speed", this.Speed);
+            jsonProxy.put("LastCheckup", this.LastCheckup);
+            jsonProxy.put("Descriptors", this.Descriptors);
+            jsonProxy.put("Location", this.Location);
+
+            return jsonProxy;
         }
     }
 
@@ -97,10 +107,10 @@ public class advancedName {
                                 for (int i = 0; i < arrColumns.getLength(); i++) {
                                     switch(i) {
                                         case 1:
-                                            objProxy.setIP(arrColumns.get(i).getAttributeDirect("data-ip"));
+                                            objProxy.setIP(new String(Base64.getDecoder().decode(arrColumns.get(i).getAttributeDirect("data-ip"))));
                                             break;
                                         case 2:
-                                            objProxy.setPort(arrColumns.get(i).getAttributeDirect("data-port"));
+                                            objProxy.setPort(new String(Base64.getDecoder().decode(arrColumns.get(i).getAttributeDirect("data-port"))));
                                             break;
                                         case 3:
                                             objProxy.setDescriptors(arrColumns, i);
@@ -141,7 +151,7 @@ public class advancedName {
         return this.arrProxies.get(new Random().nextInt(max-min) + min);
     }
 
-    public int fetchProxyQuantity() {
-        return this.arrProxies.size();
+    public JSONObject fetchProxyQuantity() {
+        return new JSONObject().put("ProxyCount", this.arrProxies.size());
     }
 }

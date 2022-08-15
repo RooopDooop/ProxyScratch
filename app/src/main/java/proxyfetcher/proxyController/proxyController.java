@@ -1,8 +1,9 @@
 package proxyfetcher.proxyController;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.MediaType;
 
 import proxyfetcher.websiteClasses.advancedName;
 
@@ -10,13 +11,19 @@ import proxyfetcher.websiteClasses.advancedName;
 public class proxyController {
     advancedName objAdvance = new advancedName();
 
-    @GetMapping("/randomProxy")
+    @RequestMapping(value = "/randomProxy", method = RequestMethod.GET,produces = MediaType.APPLICATION_JSON_VALUE)
 	public String randomProxy() {
-		return objAdvance.fetchRandomProxy().serveAddress();
+        return objAdvance.fetchRandomProxy().serveProxy().toString();
 	}
 
-    @GetMapping("/availableProxyCount")
-    public int countProxy() {
-        return objAdvance.fetchProxyQuantity();
+    @RequestMapping(value = "/availableProxyCount", method = RequestMethod.GET,produces = MediaType.APPLICATION_JSON_VALUE)
+    public String countProxy() {
+        return objAdvance.fetchProxyQuantity().toString();
     }
+
+    //Add return high speed proxy
+
+    //Add return proxy from specific location
+
+    //Add return proxy with specific descriptor(s)
 }
